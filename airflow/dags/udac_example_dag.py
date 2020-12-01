@@ -4,6 +4,7 @@ from datetime import datetime, timedelta
 import os
 from airflow import DAG
 from airflow.operators.dummy_operator import DummyOperator
+from airflow.operators.postgres_operator import PostgresOperator
 from airflow.operators import (
     StageToRedshiftOperator,
     LoadFactOperator,
@@ -12,8 +13,9 @@ from airflow.operators import (
 )
 from helpers import SqlQueries
 
-# AWS_KEY = os.environ.get('AWS_KEY')
-# AWS_SECRET = os.environ.get('AWS_SECRET')
+fd = open('/home/miguel/udacity/project_5/airflow/create_tables.sql','r')
+create_tables_sql = fd.read()
+fd.close()
 
 default_args = {
     'owner': 'udacity',
@@ -34,6 +36,13 @@ dag = DAG(
 start_operator = DummyOperator(
     task_id='Begin_execution',
     dag=dag
+)
+
+create_tables_on_redshift = PostgresOperator(
+    task_id='Create_tables',
+    dag=dag,
+    postgres_conn_id='redshift_credentials',
+    sql=create_tables_sql
 )
 
 stage_events_to_redshift = StageToRedshiftOperator(
@@ -78,8 +87,10 @@ run_quality_checks = DataQualityOperator(
 
 end_operator = DummyOperator(task_id='Stop_execution',  dag=dag)
 
-start_operator >> stage_events_to_redshift
-start_operator >> stage_songs_to_redshift
+
+start_operator >> create_tables_on_redshift
+create_tables_on_redshift >> stage_events_to_redshift
+create_tables_on_redshift >> stage_songs_to_redshift
 stage_events_to_redshift >> load_songplays_table
 stage_songs_to_redshift >> load_songplays_table
 load_songplays_table >> load_user_dimension_table
