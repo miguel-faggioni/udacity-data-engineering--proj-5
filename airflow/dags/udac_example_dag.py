@@ -1,5 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+"""
+TODO description
+TODO usage example
+"""
+
 from datetime import datetime, timedelta
 import os
 from airflow import DAG
@@ -12,6 +17,11 @@ from airflow.operators import (
     DataQualityOperator
 )
 from helpers import SqlQueries
+import configparser
+
+CFG_FILE = '/home/miguel/udacity/project_5/dp.cfg'
+config = configparser.ConfigParser()
+config.read_file(open(CFG_FILE))
 
 fd = open('/home/miguel/udacity/project_5/airflow/create_tables.sql','r')
 create_tables_sql = fd.read()
@@ -20,17 +30,21 @@ fd.close()
 default_args = {
     'owner': 'udacity',
     'start_date': datetime(2019, 1, 12),
+'''
+    'retries': 3,
+    'retry_delay': timedelta(minutes=5),
+'''
+    'email_on_failure': False,
+    'depends_on_past': False,
+    'catchup': False
 }
 
 dag = DAG(
     'udac_example_dag',
     default_args=default_args,
     description='Load and transform data in Redshift with Airflow',
-    schedule_interval='0 * * * *',
-    catchup=False,
-    email_on_failure=False,
-    retries=3,
-    
+#    schedule_interval='0 * * * *',
+    schedule_interval=None,
 )
 
 start_operator = DummyOperator(
@@ -47,12 +61,26 @@ create_tables_on_redshift = PostgresOperator(
 
 stage_events_to_redshift = StageToRedshiftOperator(
     task_id='Stage_events',
-    dag=dag
+    dag=dag,
+    aws_credentials_id='aws_credentials',
+    redshift_conn_id='redshift_credentials',
+    table='staging_events',
+    columns='userid, ts, artist, firstname, lastname, gender, length, song, level, sessionid, location, useragent, page',
+    s3_bucket=config.get('S3','bucket'),
+    s3_key=config.get('S3','log_folder'),
+    json_path="s3://my-udacity-dend-sa-east-1/jsonpath/staging_log_data.jsonpath"
 )
 
 stage_songs_to_redshift = StageToRedshiftOperator(
     task_id='Stage_songs',
-    dag=dag
+    dag=dag,
+    aws_credentials_id='aws_credentials',
+    redshift_conn_id='redshift_credentials',
+    table='staging_songs',
+    columns='song_id, artist_id, artist_latitude, artist_longitude, artist_location, title, year, duration, artist_name',
+    s3_bucket=config.get('S3','bucket'),
+    s3_key=config.get('S3','song_folder'),
+    json_path="s3://my-udacity-dend-sa-east-1/jsonpath/staging_song_data.jsonpath"
 )
 
 load_songplays_table = LoadFactOperator(
