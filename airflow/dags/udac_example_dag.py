@@ -83,29 +83,44 @@ load_songplays_table = LoadFactOperator(
     task_id='Load_songplays_fact_table',
     dag=dag,
     redshift_conn_id='redshift_credentials',
-    delete_before_insert=True,
     to_table="songplays",
     sql_select=SqlQueries.songplay_table_insert
 )
 
 load_user_dimension_table = LoadDimensionOperator(
     task_id='Load_user_dim_table',
-    dag=dag
+    dag=dag,
+    delete_before_insert=True,
+    redshift_conn_id='redshift_credentials',
+    to_table="users",
+    sql_select=SqlQueries.user_table_insert
 )
 
 load_song_dimension_table = LoadDimensionOperator(
     task_id='Load_song_dim_table',
-    dag=dag
+    dag=dag,
+    delete_before_insert=True,
+    redshift_conn_id='redshift_credentials',
+    to_table="songs",
+    sql_select=SqlQueries.song_table_insert
 )
 
 load_artist_dimension_table = LoadDimensionOperator(
     task_id='Load_artist_dim_table',
-    dag=dag
+    dag=dag,
+    delete_before_insert=True,
+    redshift_conn_id='redshift_credentials',
+    to_table="artists",
+    sql_select=SqlQueries.artist_table_insert
 )
 
 load_time_dimension_table = LoadDimensionOperator(
     task_id='Load_time_dim_table',
-    dag=dag
+    dag=dag,
+    delete_before_insert=True,
+    redshift_conn_id='redshift_credentials',
+    to_table="time",
+    sql_select=SqlQueries.time_table_insert
 )
 
 run_quality_checks = DataQualityOperator(
