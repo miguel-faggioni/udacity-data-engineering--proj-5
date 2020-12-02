@@ -23,10 +23,6 @@ CFG_FILE = '/home/miguel/udacity/project_5/dp.cfg'
 config = configparser.ConfigParser()
 config.read_file(open(CFG_FILE))
 
-fd = open('/home/miguel/udacity/project_5/airflow/create_tables.sql','r')
-create_tables_sql = fd.read()
-fd.close()
-
 default_args = {
     'owner': 'udacity',
     'start_date': datetime(2019, 1, 12),
@@ -56,7 +52,7 @@ create_tables_on_redshift = PostgresOperator(
     task_id='Create_tables',
     dag=dag,
     postgres_conn_id='redshift_credentials',
-    sql=create_tables_sql
+    sql=SqlQueries.create_tables
 )
 
 stage_events_to_redshift = StageToRedshiftOperator(
