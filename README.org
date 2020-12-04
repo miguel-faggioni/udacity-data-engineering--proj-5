@@ -1,7 +1,3 @@
-* TODO
-** código
-** README
-
 * Data Pipelines - Udacity
 
   This repository is intended for the the fifth project of the Udacity Data Engineering Nanodegree Programa: Data Pipelines.
@@ -16,27 +12,28 @@ They have decided to bring you into the project and expect you to create high gr
 
 The source data resides in S3 and needs to be processed in Sparkify's data warehouse in Amazon Redshift. The source datasets consist of JSON logs that tell about user activity in the application and JSON metadata about the songs the users listen to.
 
-* TODO Folder structure
+* Folder structure
 
 #+BEGIN_SRC 
 /
 ├── airflow
-│   ├── create_tables.sql - TODO
 │   ├── dags - Airflow DAGs for the project
-│   │   └── udac_example_dag.py - TODO
+│   │   └── udac_example_dag.py - DAG for the project
 │   └── plugins - custom Airflow plugins for the project
-│       ├── __init__.py - TODO
-│       ├── helpers - TODO
-│       │   ├── __init__.py - TODO
-│       │   └── sql_queries.py - TODO
+│       ├── helpers
+│       │   └── sql_queries.py - all the SQL queries needed to run the project
 │       └── operators - custom Airflow operators for the project
-│           ├── __init__.py - TODO
-│           ├── data_quality.py - TODO
-│           ├── load_dimension.py - TODO
-│           ├── load_fact.py - TODO
-│           └── stage_redshift.py - TODO
+│           ├── data_quality.py - DataQualityOperator
+│           ├── load_dimension.py - LoadDimensionOperator
+│           ├── load_fact.py - LoadFactOperator
+│           └── stage_redshift.py - StageToRedshiftOperator
+├── jsonpath - folder containing the jsonpath for copying data from S3 to Redshift
+│   ├── staging_log_data.jsonpath
+│   └── staging_song_data.jsonpath
 ├── README.md - this file in markdown
-└── README.org - this file in orgmode
+├── README.org - this file in orgmode
+├── dp.py - code to parse the dp.cfg file and create the necessary AWS resources
+└── dp.cfg - config file with the requirements for the AWS resources to be used and for the DAG to run
 #+END_SRC
 
 * Airflow
@@ -49,11 +46,13 @@ The source data resides in S3 and needs to be processed in Sparkify's data wareh
          --constraint "https://raw.githubusercontent.com/apache/airflow/constraints-1.10.12/constraints-3.8.txt"
    #+END_SRC
 
-   Then update the file `~/airflow/airflow.cfg` and set `dags_folder` to the dags folder of the project, and set `plugins_golder` to the plugins folder of the project. And run:
+   Then update the file `~/airflow/airflow.cfg` and set `dags_folder` to the dags folder of the project, and set `plugins_folder` to the plugins folder of the project. And run:
 
    #+BEGIN_SRC bash
    $ airflow initdb
    #+END_SRC
+
+   Optionally you can set `load_examples` to False before running `airflow initdb`, to show only the DAGs related to the project.
 
 ** Running
 
@@ -71,32 +70,18 @@ The source data resides in S3 and needs to be processed in Sparkify's data wareh
 
    These will start the Airflow scheduler and webserver, respectively. The Airflow webserver will be available on `http://localhost:8080/`
 
-* TODO Usage
+* Usage
 
-  To run the pipeline, run the following snippet on the terminal:
+  After starting the AirFlow server, go to the AirFlow webserver and turn on the `Udacity - Data Engineering - Data Pipelines with Airflow` DAG. The DAG is configured retry at most 3 times when a task fails, and with a 5 minute interval between retries.
 
-  #+BEGIN_SRC bash
-  python etl.py
-  #+END_SRC
+  The DAG will start running shortly in order to backfill its runs, starting on data from 12/1/2019, which is defined on `./airflow/dags/udac_example_dag.py`.
 
-  This code depends on the AWS credentials stored in the ~dl.cfg~ file according to the following structure:
+  When running, the DAG will:
 
-  #+BEGIN_SRC 
-[AWS]
-key=<AWS key>
-secret=<AWS secret>
+    1. Create the necessary tables on Redshift if they don't yet exist.
+    2. Copy the data from the S3 bucket to 2 staging tables on Redshift.
+    3. Copy the facts to a table on Redshift.
+    4. Copy the dimensions to 4 tables on Redshift.
+    5. Check the quality of the data copied.
 
-[S3]
-input=<S3 bucket to load the data from>
-output=<S3 bucket to store the processed data in>
-  #+END_SRC
-
-  The pipeline creates a spark session, processes the ~song_data~ folder on the input S3 bucket, then the ~log_data~ folder on the input S3 bucket. The schema needed to read the files is defined, so as to avoid any unforeseen data mixing up the expected column types.
-
-  When saving the data into the output S3 bucket, each table is stored on their own folder in the S3 output bucket. And each folder is partitioned by the following columns:
-
-  - the /songs/ table is partitioned by ~year~, then ~artist_id~;
-  - the /artists/ table is partitioned by ~artist_id~;
-  - the /users/ table is not partitioned;
-  - the /time/ table is partitioned by ~year~, then ~month~;
-  - and the /songplays/ table is partitioned by ~year~, then ~month~
+  The quality check verifies that the fact and dimension tables have no `null` values on their id columns.
