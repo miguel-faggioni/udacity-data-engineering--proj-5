@@ -68,7 +68,7 @@ stage_events_to_redshift = StageToRedshiftOperator(
     columns='userid, ts, artist, firstname, lastname, gender, length, song, level, sessionid, location, useragent, page',
     s3_bucket=config.get('S3','bucket'),
     s3_key=config.get('S3','log_folder'),
-    json_path="s3://my-udacity-dend-sa-east-1/jsonpath/staging_log_data.jsonpath"
+    json_path=config.get('S3','log_jsonpath')
 )
 
 stage_songs_to_redshift = StageToRedshiftOperator(
@@ -80,7 +80,7 @@ stage_songs_to_redshift = StageToRedshiftOperator(
     columns='song_id, artist_id, artist_latitude, artist_longitude, artist_location, title, year, duration, artist_name',
     s3_bucket=config.get('S3','bucket'),
     s3_key=config.get('S3','song_folder'),
-    json_path="s3://my-udacity-dend-sa-east-1/jsonpath/staging_song_data.jsonpath"
+    json_path=config.get('S3','song_jsonpath')
 )
 
 load_songplays_table = LoadFactOperator(
