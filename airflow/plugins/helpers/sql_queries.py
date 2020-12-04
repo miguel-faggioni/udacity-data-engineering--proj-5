@@ -126,3 +126,19 @@ CREATE TABLE IF NOT EXISTS public.users (
                extract(month from start_time), extract(year from start_time), extract(dayofweek from start_time)
         FROM songplays
     """)
+
+    select_nulls_count = (["""
+        SELECT SUM(CASE WHEN songid IS NULL THEN 1 ELSE 0 END) FROM songplays
+    ""","""
+        SELECT SUM(CASE WHEN artistid IS NULL THEN 1 ELSE 0 END) FROM songplays
+    ""","""
+        SELECT SUM(CASE WHEN userid IS NULL THEN 1 ELSE 0 END) FROM songplays
+    ""","""
+        SELECT SUM(CASE WHEN start_time IS NULL THEN 1 ELSE 0 END) FROM songplays
+    ""","""
+        SELECT SUM(CASE WHEN songid IS NULL THEN 1 ELSE 0 END) FROM songs
+    ""","""
+        SELECT SUM(CASE WHEN artistid IS NULL THEN 1 ELSE 0 END) FROM artists
+    ""","""
+        SELECT SUM(CASE WHEN userid IS NULL THEN 1 ELSE 0 END) FROM users
+    """])
