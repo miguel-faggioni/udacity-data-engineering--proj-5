@@ -42,7 +42,6 @@ class StageToRedshiftOperator(BaseOperator):
         self.json_path = json_path
         
     def execute(self, context):
-        #self.log.info('StageToRedshiftOperator not implemented yet')
         aws_hook = AwsHook(self.aws_credentials_id)
         credentials = aws_hook.get_credentials()
         redshift = PostgresHook(postgres_conn_id=self.redshift_conn_id)

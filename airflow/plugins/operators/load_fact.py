@@ -24,7 +24,6 @@ class LoadFactOperator(BaseOperator):
         self.to_table = to_table
 
     def execute(self, context):
-        #self.log.info('LoadFactOperator not implemented yet')
         redshift = PostgresHook(postgres_conn_id=self.redshift_conn_id)
 
         self.log.info("Copying facts to table")
