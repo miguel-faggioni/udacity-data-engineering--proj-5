@@ -52,13 +52,6 @@ start_operator = DummyOperator(
     dag=dag
 )
 
-create_tables_on_redshift = PostgresOperator(
-    task_id='Create_tables',
-    dag=dag,
-    postgres_conn_id='redshift_credentials',
-    sql=SqlQueries.create_tables
-)
-
 stage_events_to_redshift = StageToRedshiftOperator(
     task_id='Stage_events',
     dag=dag,
@@ -141,9 +134,8 @@ end_operator = DummyOperator(
 )
 
 
-start_operator >> create_tables_on_redshift
-create_tables_on_redshift >> stage_events_to_redshift
-create_tables_on_redshift >> stage_songs_to_redshift
+start_operator >> stage_events_to_redshift
+start_operator >> stage_songs_to_redshift
 stage_events_to_redshift >> load_songplays_table
 stage_songs_to_redshift >> load_songplays_table
 load_songplays_table >> load_user_dimension_table
