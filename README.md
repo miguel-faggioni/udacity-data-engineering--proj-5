@@ -1,13 +1,13 @@
-- [Data Pipelines - Udacity](#org52ce5c1)
-  - [Introduction](#orgf47bbc0)
-- [Folder structure](#org5a8ea62)
-- [Airflow](#org7b84dc0)
-  - [Installation](#org690be0f)
-  - [Running](#org292269f)
-- [Usage](#org0e1f501)
+- [Data Pipelines - Udacity](#org020220d)
+  - [Introduction](#orgb00a15a)
+- [Folder structure](#org4e5434c)
+- [Airflow](#org2f21557)
+  - [Installation](#orga151b1e)
+  - [Running](#org72fc91d)
+- [Usage](#orgc32b383)
 
 
-<a id="org52ce5c1"></a>
+<a id="org020220d"></a>
 
 # Data Pipelines - Udacity
 
@@ -16,7 +16,7 @@ This repository is intended for the the fifth project of the Udacity Data Engine
 The introduction was taken from the Udacity curriculum, since they summarize the activity better than I could.
 
 
-<a id="orgf47bbc0"></a>
+<a id="orgb00a15a"></a>
 
 ## Introduction
 
@@ -27,13 +27,14 @@ They have decided to bring you into the project and expect you to create high gr
 The source data resides in S3 and needs to be processed in Sparkify's data warehouse in Amazon Redshift. The source datasets consist of JSON logs that tell about user activity in the application and JSON metadata about the songs the users listen to.
 
 
-<a id="org5a8ea62"></a>
+<a id="org4e5434c"></a>
 
 # Folder structure
 
 ```
 /
 ├── airflow
+│   ├── create_tables.sql - SQL queries to create the necessary tables on Redshift
 │   ├── dags - Airflow DAGs for the project
 │   │   └── udac_example_dag.py - DAG for the project
 │   └── plugins - custom Airflow plugins for the project
@@ -54,12 +55,12 @@ The source data resides in S3 and needs to be processed in Sparkify's data wareh
 ```
 
 
-<a id="org7b84dc0"></a>
+<a id="org2f21557"></a>
 
 # Airflow
 
 
-<a id="org690be0f"></a>
+<a id="orga151b1e"></a>
 
 ## Installation
 
@@ -79,7 +80,7 @@ $ airflow initdb
 Optionally you can set \`load<sub>examples</sub>\` to False before running \`airflow initdb\`, to show only the DAGs related to the project.
 
 
-<a id="org292269f"></a>
+<a id="org72fc91d"></a>
 
 ## Running
 
@@ -98,7 +99,7 @@ $ airflow webserver
 These will start the Airflow scheduler and webserver, respectively. The Airflow webserver will be available on \`<http://localhost:8080/>\`
 
 
-<a id="org0e1f501"></a>
+<a id="orgc32b383"></a>
 
 # Usage
 
