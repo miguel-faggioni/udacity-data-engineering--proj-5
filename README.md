@@ -1,13 +1,14 @@
-- [Data Pipelines - Udacity](#org020220d)
-  - [Introduction](#orgb00a15a)
-- [Folder structure](#org4e5434c)
-- [Airflow](#org2f21557)
-  - [Installation](#orga151b1e)
-  - [Running](#org72fc91d)
-- [Usage](#orgc32b383)
+- [Data Pipelines - Udacity](#org4b2f74b)
+  - [Introduction](#orgb4b8f86)
+- [Folder structure](#org781fcc0)
+- [Airflow](#org054f650)
+  - [Installation](#orgb8b9c1c)
+  - [Running](#org7a7cbc5)
+- [Usage](#org8c6cbff)
 
 
-<a id="org020220d"></a>
+
+<a id="org4b2f74b"></a>
 
 # Data Pipelines - Udacity
 
@@ -16,7 +17,7 @@ This repository is intended for the the fifth project of the Udacity Data Engine
 The introduction was taken from the Udacity curriculum, since they summarize the activity better than I could.
 
 
-<a id="orgb00a15a"></a>
+<a id="orgb4b8f86"></a>
 
 ## Introduction
 
@@ -27,7 +28,7 @@ They have decided to bring you into the project and expect you to create high gr
 The source data resides in S3 and needs to be processed in Sparkify's data warehouse in Amazon Redshift. The source datasets consist of JSON logs that tell about user activity in the application and JSON metadata about the songs the users listen to.
 
 
-<a id="org4e5434c"></a>
+<a id="org781fcc0"></a>
 
 # Folder structure
 
@@ -55,12 +56,12 @@ The source data resides in S3 and needs to be processed in Sparkify's data wareh
 ```
 
 
-<a id="org2f21557"></a>
+<a id="org054f650"></a>
 
 # Airflow
 
 
-<a id="orga151b1e"></a>
+<a id="orgb8b9c1c"></a>
 
 ## Installation
 
@@ -71,16 +72,16 @@ $ pip install apache-airflow==1.10.12 \
       --constraint "https://raw.githubusercontent.com/apache/airflow/constraints-1.10.12/constraints-3.8.txt"
 ```
 
-Then update the file \`~/airflow/airflow.cfg\` and set \`dags<sub>folder</sub>\` to the dags folder of the project, and set \`plugins<sub>folder</sub>\` to the plugins folder of the project. And run:
+Then update the file \`~/airflow/airflow.cfg\` and set \`dags\_folder\` to the dags folder of the project, and set \`plugins\_folder\` to the plugins folder of the project. And run:
 
 ```bash
 $ airflow initdb
 ```
 
-Optionally you can set \`load<sub>examples</sub>\` to False before running \`airflow initdb\`, to show only the DAGs related to the project.
+Optionally you can set \`load\_examples\` to False before running \`airflow initdb\`, to show only the DAGs related to the project.
 
 
-<a id="org72fc91d"></a>
+<a id="org7a7cbc5"></a>
 
 ## Running
 
@@ -99,13 +100,13 @@ $ airflow webserver
 These will start the Airflow scheduler and webserver, respectively. The Airflow webserver will be available on \`<http://localhost:8080/>\`
 
 
-<a id="orgc32b383"></a>
+<a id="org8c6cbff"></a>
 
 # Usage
 
 After starting the AirFlow server, go to the AirFlow webserver and turn on the \`Udacity - Data Engineering - Data Pipelines with Airflow\` DAG. The DAG is configured retry at most 3 times when a task fails, and with a 5 minute interval between retries.
 
-The DAG will start running shortly in order to backfill its runs, starting on data from 12/1/2019, which is defined on \`./airflow/dags/udac<sub>example</sub><sub>dag.py</sub>\`.
+The DAG will start running shortly in order to backfill its runs, starting on data from 12/1/2019, which is defined on \`./airflow/dags/udac\_example\_dag.py\`.
 
 When running, the DAG will:
 

@@ -1,3 +1,4 @@
+#+OPTIONS: ^:nil
 * Data Pipelines - Udacity
 
   This repository is intended for the the fifth project of the Udacity Data Engineering Nanodegree Programa: Data Pipelines.
